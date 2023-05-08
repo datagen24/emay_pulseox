@@ -1,0 +1,49 @@
+this script stack is being developed for my own personal use, all warnties are disclaimed
+
+This code is licnced under the Original BSD 4 clause licence below
+
+Copyright (c) 2023, Steven Peterson All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that 
+the following conditions are met:
+
+    Redistributions of source code must retain the above copyright notice, this list of conditions and the 
+following disclaimer.
+    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the 
+following disclaimer in the documentation and/or other materials provided with the distribution.
+    All advertising materials mentioning features or use of this software must display the following 
+acknowledgement: This product includes software developed by the Steven Peterson.
+    Neither the name of the Steven Peterson nor the names of its contributors may be used to endorse or 
+promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY Steven Peterson AS IS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+DISCLAIMED. IN NO EVENT SHALL Steven Peterson BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY 
+WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+
+On to the list of functions
+
+1. Import and Process Emay Overnight Pulse Oximetry Data from CSV into a form for reporting
+2. Calculate HRV from the Emay Data
+3. Calculate Nightly, weekly, and long term tracking reports
+4. Export High Density Pulse, SPo2, HRV data to CSV in a format acceptable for Apple Health Import
+5. Create Dashboards in a dashboarding appliction like Grafana for quick consumption of data
+6. Produce Printable reports for review of Nightly and Weekly Data (RRD or PDF?)
+7. Connect with the Data Stored in OSCAR for sleep apnea data
+8. Recive Steamed EEG from Muse Headband via Mind Monitor IP socket and connect with Sleep Apena and Pulse ox 
+Data
+9. Store the data for long term analysis in a Database, Postgres or some time series database
+
+In doing this we will always follow PEP-8 style guide (https://peps.python.org/pep-0008/)
+these scripts should be platform agnostic, development will be done on Apple Mac on intel, may run on Arm64 
+or X64 Linux devices.
+Any server code should be able to run in containers (Re 8,9 above)
+The import code should be able to be run in a pipeline or severless function (IE OpenFaas) or triggered by a 
+new file being created
+All parmeters should be set in a Config File, secrets and passwords should be masked and stored using the 
+1Password CLI utility OP
+Future Function containers may use the Vault API
+ 

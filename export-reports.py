@@ -1,40 +1,38 @@
-import sqlite3
-import os
-from datetime import datetime
+import json
+from datetime import datetime, timedelta
 from generate_statistics import generate_statistics
 
-# Define the name and location of the SQLite database file
-db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pulseox.db")
+# load the sessions data from the JSON file
+with open('sessions.json') as f:
+    sessions = json.load(f)
 
-# Connect to the SQLite database
-conn = sqlite3.connect(db_path)
-cursor = conn.cursor()
-
-# Get the list of session IDs from the session table
-cursor.execute("SELECT session_id FROM session")
-session_ids = [row[0] for row in cursor.fetchall()]
-
-# Loop over each session and generate a report
-for session_id in session_ids:
-    # Get the session data from the session table
-    cursor.execute("SELECT filename, start_time, start_date FROM session WHERE session_id=?", (session_id,))
-    filename, start_time, start_date = cursor.fetchone()
-
-    # Generate the statistics for the session
-    duration_hours, time_below_94_hours, time_below_94_percent, time_below_89_hours, time_below_89_percent, num_dips = generate_statistics(session_id)
-
-    # Generate the report
-    report = f"Session ID: {session_id}\n"
-    report += f"Filename: {filename}\n"
-    report += f"Start Time: {start_time}\n"
-    report += f"Start Date: {start_date}\n"
+# iterate over the sessions and generate a report for each one
+for session in sessions:
+    start_timestamp_str = session.get('start_timestamp')
+    end_timestamp_str = session.get('end_timestamp')
+    if not start_timestamp_str or not end_timestamp_str:
+        print(f"Skipping session {session.get('id')} due to missing start or end timestamp.")
+        continue
+    
+    start_timestamp = datetime.fromisoformat(start_timestamp_str)
+    end_timestamp = datetime.fromisoformat(end_timestamp_str)
+    
+    stats = generate_statistics(session.get('data'))
+    duration_hours = (end_timestamp - start_timestamp).total_seconds() / 3600
+    
+    # generate the report
+    report = f"Session ID: {session.get('id')}\n"
+    report += f"Start Time: {start_timestamp}\n"
+    report += f"End Time: {end_timestamp}\n"
     report += f"Duration: {duration_hours:.2f} hours\n"
-    report += f"Time Spent Below 94%: {time_below_94_hours:.2f} hours ({time_below_94_percent:.2f}% of total time)\n"
-    report += f"Time Spent Below 89%: {time_below_89_hours:.2f} hours ({time_below_89_percent:.2f}% of total time)\n"
-    report += f"Number of Dips: {num_dips}\n"
+    report += f"Time spent below 94% saturation: {stats.get('time_below_94_percent'):.2f} hours ({stats.get('percent_time_below_94_percent'):.2f}% of total time)\n"
+    report += f"Time spent below 89% saturation: {stats.get('time_below_89_percent'):.2f} hours ({stats.get('percent_time_below_89_percent'):.2f}% of total time)\n"
+    report += f"Number of dips: {stats.get('num_dips')}\n"
     report += "\n"
-
-    # Print the report
-    print(report)
-
-conn.close()
+    
+    # save the report to a file
+    filename = f"{session.get('id')}_report.txt"
+    with open(filename, 'w') as f:
+        f.write(report)
+    
+    print(f"Report saved to {filename}.")
